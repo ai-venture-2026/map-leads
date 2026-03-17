@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh repo:*)",
+      "Bash(git commit:*)",
+      "mcp__claude_ai_Vercel__deploy_to_vercel",
+      "Bash(npx vercel:*)",
+      "Bash(vercel --yes --prod)",
+      "Bash(git mv:*)",
+      "Bash(git add:*)",
+      "Bash(git push:*)"
+    ]
+  }
+}
