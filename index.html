@@ -95,11 +95,19 @@
     <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> No Website</div>
     <div class="legend-item"><div class="legend-dot" style="background:#000"></div> HQ (27 Bloomfield Ave)</div>
   </div>
-  <div class="filter-btns">
+  <div style="margin-top:10px; font-size:12px; font-weight:600; color:#666;">Status Filter</div>
+  <div class="filter-btns" id="statusFilters">
     <button class="active" data-filter="all">All</button>
-    <button data-filter="email">Has Email</button>
     <button data-filter="no-email">No Email</button>
     <button data-filter="no-site">No Website</button>
+    <button data-filter="no-email-no-site">No Email & No Website</button>
+  </div>
+  <div style="margin-top:10px; font-size:12px; font-weight:600; color:#666;">Business Type</div>
+  <div class="filter-btns" id="typeFilters">
+    <button class="active" data-type="all">All Types</button>
+    <button data-type="salon">Salon</button>
+    <button data-type="barber">Barbershop</button>
+    <button data-type="hair">Hairdresser</button>
   </div>
 </div>
 
@@ -130,6 +138,7 @@ L.circle(HQ, { radius: 16093, color: '#2563eb', fillColor: '#2563eb', fillOpacit
 let leads = [];
 let markers = [];
 let activeFilter = 'all';
+let activeType = 'all';
 
 // Fetch all rows from a table (handles Supabase 1000-row pagination)
 async function fetchAllRows(table) {
@@ -226,19 +235,36 @@ function makePopup(l) {
   `;
 }
 
+function matchesType(lead, typeFilter) {
+  if (typeFilter === 'all') return true;
+  const text = ((lead.category || '') + ' ' + (lead.keyword || '') + ' ' + (lead.name || '')).toLowerCase();
+  if (typeFilter === 'salon') return text.includes('salon');
+  if (typeFilter === 'barber') return text.includes('barber');
+  if (typeFilter === 'hair') return text.includes('hair');
+  return true;
+}
+
 function renderMarkers(filter) {
   markers.forEach(m => map.removeLayer(m));
   markers = [];
 
-  leads.forEach(l => {
+  let filtered = leads.filter(l => {
     const lat = parseFloat(l.latitude);
     const lng = parseFloat(l.longitude);
-    if (isNaN(lat) || isNaN(lng)) return;
+    if (isNaN(lat) || isNaN(lng)) return false;
 
-    if (filter === 'email' && !l.email) return;
-    if (filter === 'no-email' && l.email) return;
-    if (filter === 'no-site' && l.has_website) return;
+    if (filter === 'no-email' && l.email) return false;
+    if (filter === 'no-site' && l.has_website) return false;
+    if (filter === 'no-email-no-site' && (l.email || l.has_website)) return false;
 
+    if (!matchesType(l, activeType)) return false;
+
+    return true;
+  });
+
+  filtered.forEach(l => {
+    const lat = parseFloat(l.latitude);
+    const lng = parseFloat(l.longitude);
     const color = getColor(l);
     const marker = L.circleMarker([lat, lng], {
       radius: 6, fillColor: color, color: '#fff', weight: 1.5, fillOpacity: 0.85
@@ -246,6 +272,9 @@ function renderMarkers(filter) {
     marker.addTo(map);
     markers.push(marker);
   });
+
+  // Update filtered count
+  document.getElementById('total').textContent = filtered.length;
 }
 
 // Main: fetch + render + schedule refresh
@@ -264,12 +293,22 @@ loadAndRender();
 // Auto-refresh every 30 seconds
 setInterval(loadAndRender, REFRESH_INTERVAL);
 
-// Filter buttons
-document.querySelectorAll('.filter-btns button').forEach(btn => {
+// Status filter buttons
+document.querySelectorAll('#statusFilters button').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btns button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#statusFilters button').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     activeFilter = btn.dataset.filter;
+    renderMarkers(activeFilter);
+  });
+});
+
+// Business type filter buttons
+document.querySelectorAll('#typeFilters button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#typeFilters button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeType = btn.dataset.type;
     renderMarkers(activeFilter);
   });
 });
