@@ -1,0 +1,296 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+#map {
+  width: 100%;
+  height: 100vh;
+}
+
+/* ── Stats Panel ── */
+.stats-panel {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  min-width: 220px;
+  font-size: 14px;
+  max-height: 90vh;
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+}
+
+.stats-panel.collapsed {
+  transform: translateX(calc(100% + 20px));
+}
+
+.stats-panel h3 {
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.stats-panel .stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.stats-panel .stat .val {
+  font-weight: 700;
+}
+
+/* ── Mobile toggle button ── */
+.toggle-panel {
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1001;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Legend ── */
+.legend {
+  margin-top: 12px;
+  border-top: 1px solid #eee;
+  padding-top: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+  font-size: 13px;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+/* ── Filter buttons ── */
+.filter-btns {
+  margin-top: 10px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.filter-btns button {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  background: #fff;
+}
+
+.filter-btns button.active {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+/* ── Route toggle ── */
+.route-toggle {
+  margin-top: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  background: #fff;
+  border: 1.5px solid #2563eb;
+  border-radius: 6px;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.route-toggle.active {
+  background: #2563eb;
+  color: #fff;
+}
+
+.route-stat {
+  font-size: 11px;
+  color: #999;
+  margin-top: 4px;
+}
+
+/* ── Stop number badges (shown on route) ── */
+.stop-badge {
+  background: #2563eb;
+  color: #fff;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+}
+
+/* ── Popups ── */
+.leaflet-popup-content {
+  font-size: 13px;
+  line-height: 1.5;
+  max-width: 280px;
+}
+
+.popup-name {
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.popup-row {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.popup-label {
+  color: #666;
+  min-width: 55px;
+}
+
+.popup-email {
+  color: #2563eb;
+  word-break: break-all;
+}
+
+.popup-no-email {
+  color: #ef4444;
+  font-style: italic;
+}
+
+.popup-tag {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.tag-website {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.tag-no-website {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.tag-email {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+/* ── HQ marker ── */
+.hq-marker {
+  background: #000;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* ── Live badge ── */
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #16a34a;
+  margin-left: 8px;
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #16a34a;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+.last-updated {
+  font-size: 11px;
+  color: #999;
+  margin-top: 4px;
+}
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  .toggle-panel {
+    display: block;
+  }
+
+  .stats-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 280px;
+    max-width: 80vw;
+    border-radius: 0;
+    padding: 60px 16px 16px;
+    max-height: 100vh;
+  }
+
+  .stats-panel.collapsed {
+    transform: translateX(100%);
+  }
+
+  .filter-btns {
+    flex-direction: column;
+  }
+
+  .filter-btns button {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .leaflet-popup-content {
+    max-width: 220px;
+    font-size: 12px;
+  }
+
+  .popup-name {
+    font-size: 13px;
+  }
+}
